@@ -17,12 +17,12 @@ export const addProduct = async (req, res) => {
 
     const imagesUrl = [];
 
-    // ✅ SIMPLE UPLOAD METHOD (WORKS 100%)
+    // Upload images to Cloudinary
     for (let file of req.files) {
       const result = await cloudinary.uploader.upload(
         `data:${file.mimetype};base64,${file.buffer.toString("base64")}`,
         {
-          folder: "products"
+          folder: "products",
         }
       );
 
@@ -38,7 +38,6 @@ export const addProduct = async (req, res) => {
       success: true,
       message: "Product Added",
     });
-
   } catch (error) {
     console.log("ERROR:", error);
     res.status(500).json({
@@ -52,24 +51,43 @@ export const addProduct = async (req, res) => {
 export const ProductList = async (req, res) => {
   try {
     const products = await product.find({});
-    res.json({ success: true, products });
+    res.json({
+      success: true,
+      products,
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
+// Product By ID
 export const ProductById = async (req, res) => {
   try {
     const productData = await product.findById(req.params.id);
+
     if (!productData) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
     }
-    res.json({ success: true, product: productData });
+
+    res.json({
+      success: true,
+      product: productData,
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
+// Change Stock
 export const changeStock = async (req, res) => {
   try {
     const { id, inStock } = req.body;
@@ -82,15 +100,13 @@ export const changeStock = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Stock Updated Successfully",  // ✅ ADD THIS
-      product: updatedProduct
+      message: "Stock Updated Successfully",
+      product: updatedProduct,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
-
